@@ -8,6 +8,7 @@ public class Enemy : MonoBehaviour
     private float moveSpeed = 10f;
 
     private float minY = -7f;
+
     private float hp = 1f;
 
     public void SetMoveSpeed(float moveSpeed)

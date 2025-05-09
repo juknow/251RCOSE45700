@@ -8,17 +8,21 @@ public class Enemy : MonoBehaviour
     private float moveSpeed = 10f;
 
     private float minY = -7f;
+    private float hp = 1f;
 
+    public void SetMoveSpeed(float moveSpeed)
+    {
+        this.moveSpeed = moveSpeed;
+    }
+
+    // Update is called once per frame
     void Update()
     {
-        // 아래로 이동
         transform.position += Vector3.down * moveSpeed * Time.deltaTime;
 
-        // 화면 아래로 벗어나면 제거
         if (transform.position.y < minY)
         {
             Destroy(gameObject);
         }
     }
 }
-

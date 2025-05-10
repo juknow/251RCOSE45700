@@ -9,7 +9,7 @@ public class TCPServerUnity : MonoBehaviour
 {
     private TcpListener server;
     private Thread listenThread;
-    private Dictionary<TcpClient, RoomPlayerController> clientMap = new();
+    private Dictionary<TcpClient, int> clientIndexMap = new();
     public List<RoomPlayerController> roomPlayers = new(); // 유니티에서 할당
 
     private int currentPlayerIndex = 0;
@@ -45,15 +45,13 @@ public class TCPServerUnity : MonoBehaviour
         NetworkStream stream = client.GetStream();
         RoomPlayerController assignedPlayer = null;
 
-        lock (clientMap)
+        lock (clientIndexMap)
         {
             if (currentPlayerIndex < roomPlayers.Count)
             {
-                assignedPlayer = roomPlayers[currentPlayerIndex];
-                clientMap[client] = assignedPlayer;
+                clientIndexMap[client] = currentPlayerIndex;
+                Debug.Log($"[TCPServerUnity] 클라이언트에 인덱스 {currentPlayerIndex} 부여됨");
                 currentPlayerIndex++;
-
-                Debug.Log($"[TCPServerUnity] 플레이어{currentPlayerIndex} 연결됨");
             }
         }
 
@@ -83,8 +81,22 @@ public class TCPServerUnity : MonoBehaviour
                 }
                 else if (msg == "READY")
                 {
+                    int index = -1;
+                    lock (clientIndexMap)
+                    {
+                        if (clientIndexMap.TryGetValue(client, out int idx))
+                        {
+                            index = idx;
+                        }
+                    }
+
+                    if (index >= 0)
+                    {
+                        Broadcast($"SPAWN:{index}");
+                        Debug.Log($"[TCPServerUnity] 모든 클라이언트에 SPAWN:{index} 전송");
+                    }
+
                     readyCount++;
-                    Debug.Log($"[TCPServerUnity] Ready 수: {readyCount}");
                     if (readyCount >= 2)
                     {
                         Broadcast("STAGE");
@@ -104,7 +116,7 @@ public class TCPServerUnity : MonoBehaviour
     void Broadcast(string msg)
     {
         byte[] data = Encoding.UTF8.GetBytes(msg);
-        foreach (var pair in clientMap)
+        foreach (var pair in clientIndexMap)
         {
             var stream = pair.Key.GetStream();
             if (stream.CanWrite)

@@ -629,8 +629,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   network: {fileID: 0}
-  roomPlayer1Prefab: {fileID: 4807662902717110817, guid: 4c39623432764ab4e80ea09b599f6302, type: 3}
-  roomPlayer2Prefab: {fileID: 4807662902717110817, guid: 4c39623432764ab4e80ea09b599f6302, type: 3}
+  roomPlayerPrefab: {fileID: 4807662902717110817, guid: 4c39623432764ab4e80ea09b599f6302, type: 3}
 --- !u!1 &540287251
 GameObject:
   m_ObjectHideFlags: 0

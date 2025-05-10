@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4793027892069942636}
   - component: {fileID: 1927423065369657216}
-  - component: {fileID: 553843352987100452}
   m_Layer: 0
   m_Name: Server
   m_TagString: Untagged
@@ -48,15 +47,3 @@ MonoBehaviour:
   roomPlayers:
   - {fileID: 3676891290647338719, guid: 4c39623432764ab4e80ea09b599f6302, type: 3}
   - {fileID: 3676891290647338719, guid: 4c39623432764ab4e80ea09b599f6302, type: 3}
---- !u!114 &553843352987100452
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8640304663169420268}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d1be8c2ea07dd1842bb9870b348ea455, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

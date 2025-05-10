@@ -80,11 +80,106 @@ public class TCPClient : MonoBehaviour
                 {
                     stageReady = true;
                 }
+                else if (msg.StartsWith("SETX:"))
+                {
+                    string[] parts = msg.Split(':');
+                    if (parts.Length == 3 &&
+                        int.TryParse(parts[1], out int index) &&
+                        float.TryParse(parts[2], out float posX))
+                    {
+                        UpdateRemotePlayer(index, posX);
+                    }
+                }
+                else if (msg.StartsWith("SETINDEX:"))
+                {
+                    if (int.TryParse(msg.Substring(9), out int myIndex))
+                    {
+                        UnityMainThreadDispatcher.Enqueue(() =>
+                        {
+                            SpawnMyPlayer(myIndex);
+                        });
+                    }
+                }
+                else if (msg.StartsWith("SPAWN:"))
+                {
+                    if (int.TryParse(msg.Substring(6), out int index))
+                    {
+                        UnityMainThreadDispatcher.Enqueue(() =>
+                        {
+                            SpawnPlayer(index);
+                        });
+                    }
+                }
             }
         }
         catch
         {
             Debug.LogWarning("서버 연결 종료됨.");
+        }
+    }
+
+    private void SpawnMyPlayer(int index)
+    {
+        Vector3 spawnPos = index == 0 ? new Vector3(-4.5f, -3f, 0) : new Vector3(4.5f, -3f, 0);
+        GameObject player = Instantiate(RoomManager.SharedRoomPlayerPrefab, spawnPos, Quaternion.identity);
+        player.name = index == 0 ? "RoomPlayer1" : "RoomPlayer2";
+
+        var controller = player.GetComponent<RoomPlayerController>();
+        if (controller != null)
+        {
+            controller.isPlayer1 = (index == 0);
+        }
+    }
+
+    private void SpawnPlayer(int index)
+    {
+        string name = index == 0 ? "RoomPlayer1" : "RoomPlayer2";
+        if (GameObject.Find(name) != null) return;
+
+        GameObject prefab = RoomManager.SharedRoomPlayerPrefab;
+        if (prefab != null)
+        {
+            Vector3 spawnPos = index == 0 ? new Vector3(-4.5f, -3f, 0) : new Vector3(4.5f, -3f, 0);
+            GameObject player = Instantiate(prefab, spawnPos, Quaternion.identity);
+            player.name = name;
+
+            var ctrl = player.GetComponent<RoomPlayerController>();
+            if (ctrl != null) ctrl.isPlayer1 = (index == 0);
+        }
+        else
+        {
+            Debug.LogWarning("[TCPClient] 플레이어 프리팹이 RoomManager.SharedRoomPlayerPrefab에서 할당되지 않음");
+        }
+    }
+
+    void UpdateRemotePlayer(int index, float posX)
+    {
+        string name = index == 0 ? "RoomPlayer1" : "RoomPlayer2";
+        GameObject obj = GameObject.Find(name);
+
+        // 자동 생성 (상대방 플레이어가 없을 때만)
+        if (obj == null)
+        {
+            GameObject prefab = RoomManager.SharedRoomPlayerPrefab;
+            if (prefab != null)
+            {
+                Vector3 spawnPos = index == 0 ? new Vector3(-4.5f, -3f, 0) : new Vector3(4.5f, -3f, 0);
+                obj = Instantiate(prefab, spawnPos, Quaternion.identity);
+                obj.name = name;
+
+                var ctrl = obj.GetComponent<RoomPlayerController>();
+                if (ctrl != null) ctrl.isPlayer1 = (index == 0);
+            }
+            else
+            {
+                Debug.LogWarning("RoomPlayer prefab을 RoomManager.SharedRoomPlayerPrefab에서 찾을 수 없습니다.");
+            }
+        }
+
+        if (obj != null)
+        {
+            var controller = obj.GetComponent<RoomPlayerController>();
+            controller?.SetXPosition(posX);
         }
     }
 

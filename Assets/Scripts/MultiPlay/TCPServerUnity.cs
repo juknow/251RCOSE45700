@@ -9,8 +9,9 @@ public class TCPServerUnity : MonoBehaviour
 {
     private TcpListener server;
     private Thread listenThread;
-    private Dictionary<TcpClient, int> clientIndexMap = new();
-    public List<RoomPlayerController> roomPlayers = new(); // 유니티에서 할당
+
+    private Dictionary<TcpClient, int> clientIndexMap = new(); // 클라이언트 → index
+    private Dictionary<int, RoomPlayerController> playerControllers = new(); // index → RoomPlayerController
 
     private int currentPlayerIndex = 0;
     private int readyCount = 0;
@@ -43,16 +44,12 @@ public class TCPServerUnity : MonoBehaviour
     void HandleClient(TcpClient client)
     {
         NetworkStream stream = client.GetStream();
-        RoomPlayerController assignedPlayer = null;
 
         lock (clientIndexMap)
         {
-            if (currentPlayerIndex < roomPlayers.Count)
-            {
-                clientIndexMap[client] = currentPlayerIndex;
-                Debug.Log($"[TCPServerUnity] 클라이언트에 인덱스 {currentPlayerIndex} 부여됨");
-                currentPlayerIndex++;
-            }
+            clientIndexMap[client] = currentPlayerIndex;
+            Debug.Log($"[TCPServerUnity] 클라이언트에 인덱스 {currentPlayerIndex} 부여됨");
+            currentPlayerIndex++;
         }
 
         byte[] buffer = new byte[1024];
@@ -67,16 +64,24 @@ public class TCPServerUnity : MonoBehaviour
                 string msg = Encoding.UTF8.GetString(buffer, 0, read);
                 Debug.Log("[TCPServerUnity] 수신: " + msg);
 
-                if (msg.StartsWith("POS:") && assignedPlayer != null)
+                if (msg.StartsWith("POS:"))
                 {
-                    if (float.TryParse(msg.Substring(4), out float x))
+                    string[] parts = msg.Split(':');
+                    if (parts.Length == 3 &&
+                        int.TryParse(parts[1], out int index) &&
+                        float.TryParse(parts[2], out float x))
                     {
-                        // Unity 메인 스레드에서 움직이기 위해 메서드 예약
-                        float moveX = x;
-                        UnityMainThreadDispatcher.Enqueue(() =>
+                        Broadcast($"SETX:{index}:{x:F2}");
+
+                        // 서버에서도 위치 반영 (옵션)
+                        if (playerControllers.TryGetValue(index, out var controller))
                         {
-                            assignedPlayer.SetXPosition(moveX);
-                        });
+                            float moveX = x;
+                            UnityMainThreadDispatcher.Enqueue(() =>
+                            {
+                                controller.SetXPosition(moveX);
+                            });
+                        }
                     }
                 }
                 else if (msg == "READY")
@@ -94,6 +99,22 @@ public class TCPServerUnity : MonoBehaviour
                     {
                         Broadcast($"SPAWN:{index}");
                         Debug.Log($"[TCPServerUnity] 모든 클라이언트에 SPAWN:{index} 전송");
+
+                        // Unity 오브젝트 캐싱
+                        UnityMainThreadDispatcher.Enqueue(() =>
+                        {
+                            string name = index == 0 ? "RoomPlayer1" : "RoomPlayer2";
+                            GameObject obj = GameObject.Find(name);
+                            if (obj != null)
+                            {
+                                var ctrl = obj.GetComponent<RoomPlayerController>();
+                                if (ctrl != null)
+                                {
+                                    playerControllers[index] = ctrl;
+                                    Debug.Log($"[TCPServerUnity] RoomPlayer{index + 1} 컨트롤러 등록됨");
+                                }
+                            }
+                        });
                     }
 
                     readyCount++;

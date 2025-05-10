@@ -3,6 +3,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 
 public class TCPClient : MonoBehaviour
 {
@@ -10,6 +11,8 @@ public class TCPClient : MonoBehaviour
     private NetworkStream stream;
     private Thread recvThread;
     private bool stageReady = false;
+    private Dictionary<int, RoomPlayerController> playerMap = new();
+    public static int MyPlayerIndex { get; private set; }
 
 
     void Start()
@@ -25,16 +28,17 @@ public class TCPClient : MonoBehaviour
             SceneManager.LoadScene("StageScene");
         }
 
-        //마우스 위치 전송
-        if(stream != null && stream.CanWrite)
+        // 위치 전송 (내 플레이어만)
+        if (stream != null && stream.CanWrite && MyPlayerIndex >= 0)
         {
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             float x = mousePos.x;
 
-            string msg = $"POS:{x:F2}";
+            string msg = $"POS:{MyPlayerIndex}:{x:F2}";
             byte[] data = Encoding.UTF8.GetBytes(msg);
             stream.Write(data, 0, data.Length);
         }
+
     }
 
     void ConnectToServer()
@@ -92,12 +96,10 @@ public class TCPClient : MonoBehaviour
                 }
                 else if (msg.StartsWith("SETINDEX:"))
                 {
-                    if (int.TryParse(msg.Substring(9), out int myIndex))
+                    if (int.TryParse(msg.Substring(9), out int index))
                     {
-                        UnityMainThreadDispatcher.Enqueue(() =>
-                        {
-                            SpawnMyPlayer(myIndex);
-                        });
+                        MyPlayerIndex = index;
+                        UnityMainThreadDispatcher.Enqueue(() => SpawnMyPlayer(index));
                     }
                 }
                 else if (msg.StartsWith("SPAWN:"))
@@ -128,58 +130,45 @@ public class TCPClient : MonoBehaviour
         if (controller != null)
         {
             controller.isPlayer1 = (index == 0);
+            playerMap[index] = controller;
         }
     }
 
     private void SpawnPlayer(int index)
     {
-        string name = index == 0 ? "RoomPlayer1" : "RoomPlayer2";
-        if (GameObject.Find(name) != null) return;
+        if (playerMap.ContainsKey(index)) return;
 
         GameObject prefab = RoomManager.SharedRoomPlayerPrefab;
         if (prefab != null)
         {
             Vector3 spawnPos = index == 0 ? new Vector3(-4.5f, -3f, 0) : new Vector3(4.5f, -3f, 0);
             GameObject player = Instantiate(prefab, spawnPos, Quaternion.identity);
-            player.name = name;
+            player.name = index == 0 ? "RoomPlayer1" : "RoomPlayer2";
 
             var ctrl = player.GetComponent<RoomPlayerController>();
-            if (ctrl != null) ctrl.isPlayer1 = (index == 0);
+            if (ctrl != null)
+            {
+                ctrl.isPlayer1 = (index == 0);
+                playerMap[index] = ctrl;
+            }
         }
         else
         {
-            Debug.LogWarning("[TCPClient] 플레이어 프리팹이 RoomManager.SharedRoomPlayerPrefab에서 할당되지 않음");
+            Debug.LogWarning("[TCPClient] SharedRoomPlayerPrefab is null.");
         }
     }
 
     void UpdateRemotePlayer(int index, float posX)
     {
-        string name = index == 0 ? "RoomPlayer1" : "RoomPlayer2";
-        GameObject obj = GameObject.Find(name);
+        if (index == MyPlayerIndex) return;
 
-        // 자동 생성 (상대방 플레이어가 없을 때만)
-        if (obj == null)
+        if (playerMap.TryGetValue(index, out var controller))
         {
-            GameObject prefab = RoomManager.SharedRoomPlayerPrefab;
-            if (prefab != null)
-            {
-                Vector3 spawnPos = index == 0 ? new Vector3(-4.5f, -3f, 0) : new Vector3(4.5f, -3f, 0);
-                obj = Instantiate(prefab, spawnPos, Quaternion.identity);
-                obj.name = name;
-
-                var ctrl = obj.GetComponent<RoomPlayerController>();
-                if (ctrl != null) ctrl.isPlayer1 = (index == 0);
-            }
-            else
-            {
-                Debug.LogWarning("RoomPlayer prefab을 RoomManager.SharedRoomPlayerPrefab에서 찾을 수 없습니다.");
-            }
+            controller.SetXPosition(posX);
         }
-
-        if (obj != null)
+        else
         {
-            var controller = obj.GetComponent<RoomPlayerController>();
-            controller?.SetXPosition(posX);
+            Debug.LogWarning($"[TCPClient] Remote player {index} not found in map.");
         }
     }
 

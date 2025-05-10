@@ -1,0 +1,15 @@
+C:\Users\JUNHO\251RCOSE45700\TCPServerApp\bin\Debug\net8.0\TCPServerApp.exe
+C:\Users\JUNHO\251RCOSE45700\TCPServerApp\bin\Debug\net8.0\TCPServerApp.deps.json
+C:\Users\JUNHO\251RCOSE45700\TCPServerApp\bin\Debug\net8.0\TCPServerApp.runtimeconfig.json
+C:\Users\JUNHO\251RCOSE45700\TCPServerApp\bin\Debug\net8.0\TCPServerApp.dll
+C:\Users\JUNHO\251RCOSE45700\TCPServerApp\bin\Debug\net8.0\TCPServerApp.pdb
+C:\Users\JUNHO\251RCOSE45700\TCPServerApp\obj\Debug\net8.0\TCPServerApp.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\JUNHO\251RCOSE45700\TCPServerApp\obj\Debug\net8.0\TCPServerApp.AssemblyInfoInputs.cache
+C:\Users\JUNHO\251RCOSE45700\TCPServerApp\obj\Debug\net8.0\TCPServerApp.AssemblyInfo.cs
+C:\Users\JUNHO\251RCOSE45700\TCPServerApp\obj\Debug\net8.0\TCPServerApp.csproj.CoreCompileInputs.cache
+C:\Users\JUNHO\251RCOSE45700\TCPServerApp\obj\Debug\net8.0\TCPServerApp.sourcelink.json
+C:\Users\JUNHO\251RCOSE45700\TCPServerApp\obj\Debug\net8.0\TCPServerApp.dll
+C:\Users\JUNHO\251RCOSE45700\TCPServerApp\obj\Debug\net8.0\refint\TCPServerApp.dll
+C:\Users\JUNHO\251RCOSE45700\TCPServerApp\obj\Debug\net8.0\TCPServerApp.pdb
+C:\Users\JUNHO\251RCOSE45700\TCPServerApp\obj\Debug\net8.0\TCPServerApp.genruntimeconfig.cache
+C:\Users\JUNHO\251RCOSE45700\TCPServerApp\obj\Debug\net8.0\ref\TCPServerApp.dll

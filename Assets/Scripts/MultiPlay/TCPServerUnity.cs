@@ -5,13 +5,14 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using UnityEngine;
+
 public class TCPServerUnity : MonoBehaviour
 {
     private TcpListener server;
     private Thread listenThread;
 
-    private Dictionary<TcpClient, int> clientIndexMap = new(); // 클라이언트 → index
-    private Dictionary<int, RoomPlayerController> playerControllers = new(); // index → RoomPlayerController
+    private Dictionary<TcpClient, int> clientIndexMap = new();
+    private Dictionary<int, RoomPlayerController> playerControllers = new();
 
     private int currentPlayerIndex = 0;
     private int readyCount = 0;
@@ -32,12 +33,19 @@ public class TCPServerUnity : MonoBehaviour
     {
         while (true)
         {
-            TcpClient client = server.AcceptTcpClient();
-            Debug.Log("[TCPServerUnity] 클라이언트 연결됨");
+            try
+            {
+                TcpClient client = server.AcceptTcpClient();
+                Debug.Log("[TCPServerUnity] 클라이언트 연결됨");
 
-            Thread t = new Thread(() => HandleClient(client));
-            t.IsBackground = true;
-            t.Start();
+                Thread t = new Thread(() => HandleClient(client));
+                t.IsBackground = true;
+                t.Start();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[TCPServerUnity] 클라이언트 수락 실패: {ex.Message}");
+            }
         }
     }
 
@@ -54,15 +62,30 @@ public class TCPServerUnity : MonoBehaviour
             currentPlayerIndex++;
         }
 
-        // 인덱스를 클라이언트에게 전송
         try
         {
+            // 1. 자신의 인덱스 전송
             byte[] indexMsg = Encoding.UTF8.GetBytes($"SETINDEX:{assignedIndex}");
             stream.Write(indexMsg, 0, indexMsg.Length);
+
+            //  2. 기존 클라이언트들을 새 클라이언트에게 SPAWN
+            lock (clientIndexMap)
+            {
+                foreach (var pair in clientIndexMap)
+                {
+                    int otherIndex = pair.Value;
+                    if (otherIndex != assignedIndex)
+                    {
+                        byte[] spawnMsg = Encoding.UTF8.GetBytes($"SPAWN:{otherIndex}");
+                        stream.Write(spawnMsg, 0, spawnMsg.Length);
+                        Debug.Log($"[TCPServerUnity] 기존 클라이언트 {otherIndex}를 SPAWN:{otherIndex}로 새 클라이언트에게 전송");
+                    }
+                }
+            }
         }
         catch (Exception ex)
         {
-            Debug.LogWarning($"[TCPServerUnity] SETINDEX 전송 실패: {ex.Message}");
+            Debug.LogWarning($"[TCPServerUnity] 초기 SETINDEX 또는 SPAWN 전송 실패: {ex.Message}");
         }
 
         byte[] buffer = new byte[1024];
@@ -88,10 +111,9 @@ public class TCPServerUnity : MonoBehaviour
 
                         if (playerControllers.TryGetValue(index, out var controller))
                         {
-                            float moveX = x;
                             UnityMainThreadDispatcher.Enqueue(() =>
                             {
-                                controller.SetXPosition(moveX);
+                                controller.SetXPosition(x);
                             });
                         }
                     }
@@ -139,10 +161,19 @@ public class TCPServerUnity : MonoBehaviour
         }
         catch (Exception ex)
         {
-            Debug.LogWarning("클라이언트 통신 오류: " + ex.Message);
+            Debug.LogWarning("[TCPServerUnity] 클라이언트 통신 오류: " + ex.Message);
         }
+        finally
+        {
+            if (clientIndexMap.TryGetValue(client, out int idx))
+            {
+                Debug.Log($"[TCPServerUnity] 클라이언트 {idx} 연결 종료");
+                clientIndexMap.Remove(client);
+                playerControllers.Remove(idx);
+            }
 
-        client.Close();
+            client.Close();
+        }
     }
 
     void Broadcast(string msg)
@@ -150,15 +181,25 @@ public class TCPServerUnity : MonoBehaviour
         byte[] data = Encoding.UTF8.GetBytes(msg);
         foreach (var pair in clientIndexMap)
         {
-            var stream = pair.Key.GetStream();
-            if (stream.CanWrite)
-                stream.Write(data, 0, data.Length);
+            try
+            {
+                var stream = pair.Key.GetStream();
+                if (stream.CanWrite)
+                {
+                    stream.Write(data, 0, data.Length);
+                    Debug.Log($"[TCPServerUnity] → 클라이언트 {pair.Value}에게 전송됨: {msg}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"[TCPServerUnity] Broadcast 실패 (클라이언트 {pair.Value}): {ex.Message}");
+            }
         }
     }
 
     void OnApplicationQuit()
     {
-        server?.Stop();
-        listenThread?.Abort();
+        try { server?.Stop(); } catch { }
+        try { listenThread?.Abort(); } catch { }
     }
 }

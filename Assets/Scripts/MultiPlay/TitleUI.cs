@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Collections;
 
 public class TitleUI : MonoBehaviour
 {
@@ -9,36 +10,38 @@ public class TitleUI : MonoBehaviour
 
     public void OnHostClicked()
     {
-        // 1. TCP 서버 실행
-        if (serverPrefab != null)
-        {
-            GameObject server = Instantiate(serverPrefab);
-            DontDestroyOnLoad(server);
-            Debug.Log("[TitleUI] 서버 인스턴스 생성됨");
-        }
+        StartCoroutine(HostRoutine());
+    }
 
-        // 2. 클라이언트로 자기 자신도 접속
-        if (clientPrefab != null)
-        {
-            GameObject client = Instantiate(clientPrefab);
-            DontDestroyOnLoad(client);
-            Debug.Log("[TitleUI] 호스트도 클라이언트로 접속됨");
-        }
+    private IEnumerator HostRoutine()
+    {
+        GameObject server = Instantiate(serverPrefab);
+        DontDestroyOnLoad(server);
 
-        // 3. 룸 씬으로 이동
+        yield return new WaitForSeconds(0.2f); // 서버가 먼저 Listen 하도록 대기
+
+        GameObject client = Instantiate(clientPrefab);
+        DontDestroyOnLoad(client);
+
+        yield return new WaitForSeconds(0.2f); // 클라이언트가 서버에 접속 시작하도록 잠깐 대기
+
         SceneManager.LoadScene("RoomScene");
     }
+
 
     public void OnJoinClicked()
     {
-        // 필요 시 클라이언트 프리팹도 DontDestroyOnLoad로 유지
-        if (clientPrefab != null)
-        {
-            GameObject client = Instantiate(clientPrefab);
-            DontDestroyOnLoad(client);
-            Debug.Log("[TitleUI] 클라이언트 인스턴스 생성됨");
-        }
+        StartCoroutine(JoinRoutine());
+    }
+
+    private IEnumerator JoinRoutine()
+    {
+        GameObject client = Instantiate(clientPrefab);
+        DontDestroyOnLoad(client);
+
+        yield return new WaitForSeconds(0.2f); // 접속 시도 시작 여유
 
         SceneManager.LoadScene("RoomScene");
     }
+
 }

@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 7341916102987860452}
   - component: {fileID: 5238558387220842947}
   - component: {fileID: 7324196904172205054}
-  - component: {fileID: 8374691142647103947}
+  - component: {fileID: 2929385740065780044}
   m_Layer: 0
-  m_Name: Enemy6
+  m_Name: Enemy4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 8672579129450794706}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.61, y: 4.13, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -75,7 +75,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 1276133046112500958, guid: 7ae6e0724d1ff4eae82d8df413953667, type: 3}
+  m_Sprite: {fileID: 5435821699272093448, guid: 7ae6e0724d1ff4eae82d8df413953667, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -99,7 +99,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 10
---- !u!61 &8374691142647103947
+--- !u!61 &2929385740065780044
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -135,12 +135,12 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.64285713, y: 1.8214285}
+    oldSize: {x: 1.3214285, y: 1.7142857}
     newSize: {x: 0.55, y: 0.3}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.64285713, y: 1.8214285}
+  m_Size: {x: 1.3214285, y: 1.7142857}
   m_EdgeRadius: 0

@@ -10,12 +10,11 @@ public class PlayerController : MonoBehaviour
 
     public Transform shootTransform;
 
-    [SerializeField]
-    public float shootInterval = 0.05f;
-    [SerializeField] public float leftMargin;
-    [SerializeField] public float rightMargin;
+    [SerializeField] private float shootInterval = 0.5f;
+    [SerializeField] private float leftMargin = -4f;
+    [SerializeField] private float rightMargin = 4f;
 
-    public float lastShotTime = 0f;
+    private float lastShotTime = 0f;
 
     void Update()
     {
@@ -28,38 +27,21 @@ public class PlayerController : MonoBehaviour
     {
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         float toX = Mathf.Clamp(mousePos.x, leftMargin, rightMargin);
-        transform.position = new Vector3(toX, -3f, transform.position.z);
+        transform.position = new Vector3(toX, transform.position.y, transform.position.z);
     }
 
     public void TryShoot()
     {
         if (Time.time - lastShotTime > shootInterval)
         {
-            CmdShoot();
+            Shoot();
             lastShotTime = Time.time;
         }
     }
-    public void CmdShoot()
+    public void Shoot()
     {
         GameObject bullet = Instantiate(weapon, shootTransform.position, Quaternion.identity);
     }
 
-    /*
-    public override void OnStartLocalPlayer()
-    {
-        base.OnStartLocalPlayer();
-
-        if (isServer && isLocalPlayer)
-        {
-            leftMargin = -7.5f;
-            rightMargin = -1.5f;
-        }
-        else
-        {
-            leftMargin = 1.5f;
-            rightMargin = 7.5f;
-        }
-    }
-    */
 }
 

@@ -1,9 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
-using Mirror;
 using UnityEngine;
 
-public class Weapon : NetworkBehaviour
+public class Weapon : MonoBehaviour
 {
     public float moveSpeed = 10; // 기본 속도 설정
 
@@ -14,7 +13,7 @@ public class Weapon : NetworkBehaviour
         transform.position += Vector3.up * moveSpeed * Time.deltaTime;
     }
 
-    public override void OnStartServer()
+    void Start()
     {
         Destroy(gameObject, 3f);
     }

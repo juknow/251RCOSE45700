@@ -1,9 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
-using Mirror;
 using UnityEngine;
 
-public class PlayerController : NetworkBehaviour
+public class PlayerController : MonoBehaviour
 {
     public float moveSpeed;
 
@@ -20,9 +19,6 @@ public class PlayerController : NetworkBehaviour
 
     void Update()
     {
-        if (!isLocalPlayer || !NetworkClient.ready) return;
-
-        Debug.Log($"[{netId}] isLocalPlayer={isLocalPlayer}");
 
         HandleMovement();
         TryShoot();
@@ -43,14 +39,12 @@ public class PlayerController : NetworkBehaviour
             lastShotTime = Time.time;
         }
     }
-
-    [Command]
     public void CmdShoot()
     {
         GameObject bullet = Instantiate(weapon, shootTransform.position, Quaternion.identity);
-        NetworkServer.Spawn(bullet);
     }
 
+    /*
     public override void OnStartLocalPlayer()
     {
         base.OnStartLocalPlayer();
@@ -66,5 +60,6 @@ public class PlayerController : NetworkBehaviour
             rightMargin = 7.5f;
         }
     }
+    */
 }
 

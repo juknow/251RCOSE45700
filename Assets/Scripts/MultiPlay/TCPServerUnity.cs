@@ -44,12 +44,25 @@ public class TCPServerUnity : MonoBehaviour
     void HandleClient(TcpClient client)
     {
         NetworkStream stream = client.GetStream();
+        int assignedIndex;
 
         lock (clientIndexMap)
         {
-            clientIndexMap[client] = currentPlayerIndex;
-            Debug.Log($"[TCPServerUnity] 클라이언트에 인덱스 {currentPlayerIndex} 부여됨");
+            assignedIndex = currentPlayerIndex;
+            clientIndexMap[client] = assignedIndex;
+            Debug.Log($"[TCPServerUnity] 클라이언트에 인덱스 {assignedIndex} 부여됨");
             currentPlayerIndex++;
+        }
+
+        // 인덱스를 클라이언트에게 전송
+        try
+        {
+            byte[] indexMsg = Encoding.UTF8.GetBytes($"SETINDEX:{assignedIndex}");
+            stream.Write(indexMsg, 0, indexMsg.Length);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning($"[TCPServerUnity] SETINDEX 전송 실패: {ex.Message}");
         }
 
         byte[] buffer = new byte[1024];
@@ -73,7 +86,6 @@ public class TCPServerUnity : MonoBehaviour
                     {
                         Broadcast($"SETX:{index}:{x:F2}");
 
-                        // 서버에서도 위치 반영 (옵션)
                         if (playerControllers.TryGetValue(index, out var controller))
                         {
                             float moveX = x;
@@ -100,7 +112,6 @@ public class TCPServerUnity : MonoBehaviour
                         Broadcast($"SPAWN:{index}");
                         Debug.Log($"[TCPServerUnity] 모든 클라이언트에 SPAWN:{index} 전송");
 
-                        // Unity 오브젝트 캐싱
                         UnityMainThreadDispatcher.Enqueue(() =>
                         {
                             string name = index == 0 ? "RoomPlayer1" : "RoomPlayer2";

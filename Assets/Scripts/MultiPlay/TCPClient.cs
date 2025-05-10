@@ -13,6 +13,7 @@ public class TCPClient : MonoBehaviour
     private bool stageReady = false;
     private Dictionary<int, RoomPlayerController> playerMap = new();
     public static int MyPlayerIndex { get; private set; }
+    public static float LastReceivedOtherPlayerX { get; private set; }
 
 
     void Start()
@@ -162,14 +163,19 @@ public class TCPClient : MonoBehaviour
     {
         if (index == MyPlayerIndex) return;
 
+        UnityMainThreadDispatcher.Enqueue(() =>
+        {
+            LastReceivedOtherPlayerX = posX;
+            Debug.Log($"[TCPClient] 메인 스레드에서 상대 위치 저장됨: {posX}");
+        });
+
+        // 우선 RoomPlayerController가 있으면 처리
         if (playerMap.TryGetValue(index, out var controller))
         {
             controller.SetXPosition(posX);
+
         }
-        else
-        {
-            Debug.LogWarning($"[TCPClient] Remote player {index} not found in map.");
-        }
+        
     }
 
     private void OnApplicationQuit()

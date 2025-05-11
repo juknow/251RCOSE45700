@@ -1,54 +1,71 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager Instance;
+
+    [SerializeField] private StageManager stageManager;
+    [SerializeField] private StageData[] allStages;
+
+    private int currentStageIndex = 0;
+
+    public float weaponDamage = 1f;
+    public float playerHp = 3f;
+    private float maxPlayerHp;
+
     [SerializeField]
-    private GameObject[] enemies;  // 프리팹 배열
+    private Slider playerHpSlider;
 
-    private Transform[] arrEnemyTransform;  // SpawnPoint들의 Transform (글로벌 기준)
+    void Awake()
+    {
+        if (Instance == null)
+            Instance = this;
+        else
+            Destroy(gameObject);
+    }
 
-    [SerializeField]
-    private Transform spawnContainer;  // SpawnContainer 오브젝트 (부모)
-
-    [SerializeField]
-    private float spawnInterval = 3f;  // 생성 간격
-
-    // Start is called before the first frame update
     void Start()
     {
-        // SpawnContainer의 자식들만 배열로 저장 (자기 자신 제외)
-        arrEnemyTransform = new Transform[spawnContainer.childCount];
-        for (int i = 0; i < spawnContainer.childCount; i++)
-        {
-            arrEnemyTransform[i] = spawnContainer.GetChild(i);
-        }
+        maxPlayerHp = playerHp;
+        playerHpSlider.maxValue = maxPlayerHp;
+        playerHpSlider.value = playerHp;
 
-        StartCoroutine(EnemyRoutine());
+        StartStage(currentStageIndex);
     }
 
-    IEnumerator EnemyRoutine()
+    void StartStage(int index)
     {
-        yield return new WaitForSeconds(3f);  // 처음 시작 전 대기
-
-        while (true)
+        if (index < allStages.Length)
         {
-            foreach (Transform t in arrEnemyTransform)
-            {
-                int index = Random.Range(0, enemies.Length);  // 0~2
-                SpawnEnemy(t.position, index);
-            }
+            StageData stage = allStages[index];
+            Debug.Log($"[GameManager] Starting {stage.stageType}");
 
-            yield return new WaitForSeconds(spawnInterval);
+            stageManager.OnStageCompleted += HandleStageCompleted;
+            stageManager.StartStage(stage);
+        }
+        else
+        {
+            Debug.Log("게임 전체 완료!");
         }
     }
 
-    void SpawnEnemy(Vector3 globalPos, int index)
+    void HandleStageCompleted()
     {
-        Vector3 spawnPos = new Vector3(globalPos.x, spawnContainer.position.y, 0f);  // X는 스폰포인트, Y는 GameManager 기준
-        Instantiate(enemies[index], spawnPos, Quaternion.identity);
+        stageManager.OnStageCompleted -= HandleStageCompleted;
+        currentStageIndex++;
+        StartStage(currentStageIndex);
     }
 
+    public void DamagePlayer(float damage)
+    {
+        playerHp -= damage;
+        Debug.Log($"[GameManager] Player damaged. Current HP: {playerHp}");
 
+        if (playerHp <= 0)
+        {
+            Debug.Log("[GameManager] Player Died");
+            // 여기에 게임 오버 처리 추가 가능
+        }
+    }
 }

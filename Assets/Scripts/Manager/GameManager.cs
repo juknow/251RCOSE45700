@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -29,6 +30,10 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private Slider playerExpSlider;
 
+    [SerializeField] private UpgradeData[] allUpgrades; // 전체 업그레이드 목록
+    [SerializeField] private GameObject upgradeCanvas; // UpgradeCanvas 전체
+    [SerializeField] private UpgradeContainer[] upgradeContainers; // 3개 컨테이너 참조
+
     void Awake()
     {
         if (Instance == null)
@@ -39,6 +44,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        Cursor.visible = false;
         playerLevel = playerLevelData.startingLevel;
         playerExp = 0f;
 
@@ -108,10 +114,48 @@ public class GameManager : MonoBehaviour
 
             SetMaxExpForLevel(playerLevel);
             Debug.Log($"레벨업! 현재 레벨: {playerLevel}");
+            OpenUpgradeUI();
         }
 
         Debug.Log($"[레벨 {playerLevel}] EXP: {playerExp:F1} / {maxPlayerExp:F1}");
     }
+
+    private void OpenUpgradeUI()
+    {
+        Cursor.visible = true;
+        Time.timeScale = 0f;
+        upgradeCanvas.SetActive(true);
+
+        List<UpgradeData> selected = GetRandomUpgrades(3);
+
+        for (int i = 0; i < upgradeContainers.Length; i++)
+        {
+            upgradeContainers[i].SetUpgrade(selected[i]);
+        }
+    }
+
+    private List<UpgradeData> GetRandomUpgrades(int count)
+    {
+        List<UpgradeData> result = new List<UpgradeData>();
+        List<UpgradeData> pool = new List<UpgradeData>(allUpgrades);
+
+        for (int i = 0; i < count && pool.Count > 0; i++)
+        {
+            int index = Random.Range(0, pool.Count);
+            result.Add(pool[index]);
+            pool.RemoveAt(index);
+        }
+
+        return result;
+    }
+
+    public void CloseUpgradeUI()
+    {
+        Cursor.visible = false;
+        upgradeCanvas.SetActive(false);
+        Time.timeScale = 1f;
+    }
+
 
     private void SetMaxExpForLevel(int level)
     {

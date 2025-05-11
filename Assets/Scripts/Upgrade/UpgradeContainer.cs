@@ -26,5 +26,8 @@ public class UpgradeContainer : MonoBehaviour
     public void OnUpgradeSelected()
     {
         GameManager.Instance.ApplyUpgrade(upgradeData.upgradeType);
+        GameManager.Instance.CloseUpgradeUI();
     }
+
+
 }

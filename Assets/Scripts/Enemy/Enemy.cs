@@ -8,6 +8,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float moveSpeed = 10f;
     [SerializeField] private float hp = 1f;
     [SerializeField] private float enemyDamage = 1f;
+    [SerializeField] private float expEarn = 1f;
 
     private float maxHp;
 
@@ -49,13 +50,11 @@ public class Enemy : MonoBehaviour
         {
             hp -= GameManager.Instance.weaponDamage;
 
-            if (hpSlider != null)
-            {
-                hpSlider.value = hp;
-            }
+            hpSlider.value = hp;
 
             if (hp <= 0)
             {
+                GameManager.Instance.AddExp(expEarn);
                 Destroy(gameObject);
             }
 

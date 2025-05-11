@@ -181,8 +181,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.25}
   m_AnchorMax: {x: 1, y: 0.75}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -2.4999976, y: 0}
+  m_SizeDelta: {x: -5, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8225911982305548339
 CanvasRenderer:
@@ -621,8 +621,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9aacb8e0b87804058bf49a033ecdb773, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 5
-  hp: 10
+  moveSpeed: 4
+  hp: 3
+  enemyDamage: 1
+  expEarn: 1
   hpSlider: {fileID: 8306902848923669856}
 --- !u!61 &3563227389415649595
 BoxCollider2D:

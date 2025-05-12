@@ -48,7 +48,7 @@ public class Enemy : MonoBehaviour
     {
         if (collision.CompareTag("Weapon"))
         {
-            hp -= GameManager.Instance.weaponDamage;
+            hp -= GameManager.Instance.GetWeaponDamage();
 
             hpSlider.value = hp;
 

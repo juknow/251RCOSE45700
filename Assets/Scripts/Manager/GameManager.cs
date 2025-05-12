@@ -6,6 +6,8 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
+    public bool isGamePaused = false;
+
     [SerializeField] private PlayerLevelData playerLevelData;
 
     [SerializeField] private StageManager stageManager;
@@ -33,6 +35,13 @@ public class GameManager : MonoBehaviour
     [SerializeField] private UpgradeData[] allUpgrades; // 전체 업그레이드 목록
     [SerializeField] private GameObject upgradeCanvas; // UpgradeCanvas 전체
     [SerializeField] private UpgradeContainer[] upgradeContainers; // 3개 컨테이너 참조
+
+
+    [SerializeField] private Slider feedbackSlider; // UI 연결
+    [SerializeField] private float feedbackDecaySpeed = 1f; // 게이지 감소 속도
+    [SerializeField] private float feedbackGainMultiplier = 1f; // 이동량 -> 게이지 증가량 배율
+    [SerializeField] private float maxFeedback = 100f;
+    private float currentFeedback = 0f;
 
     void Awake()
     {
@@ -63,9 +72,32 @@ public class GameManager : MonoBehaviour
             playerHpSlider.value = playerHp / maxPlayerHp;
 
             playerExpSlider.value = playerExp / maxPlayerExp;
+
+        UpdateFeedback();
     }
 
+    public void AddFeedback(float deltaX)
+    {
+        float gain = deltaX * feedbackGainMultiplier;
+        currentFeedback = Mathf.Clamp(currentFeedback + gain, 0, maxFeedback);
+    }
 
+    private void UpdateFeedback()
+    {
+        if (currentFeedback > 0)
+        {
+            currentFeedback -= feedbackDecaySpeed * Time.deltaTime;
+            currentFeedback = Mathf.Max(0, currentFeedback);
+        }
+
+        feedbackSlider.value = currentFeedback / maxFeedback;
+    }
+
+    public float GetWeaponDamage()
+    {
+        float feedbackBonus = (currentFeedback / maxFeedback); // 예: 0 ~ 1
+        return weaponDamage * (1f + feedbackBonus); // 최대 2배까지 증가
+    }
 
     void StartStage(int index)
     {
@@ -125,6 +157,7 @@ public class GameManager : MonoBehaviour
         Cursor.visible = true;
         Time.timeScale = 0f;
         upgradeCanvas.SetActive(true);
+        isGamePaused = true;
 
         List<UpgradeData> selected = GetRandomUpgrades(3);
 
@@ -153,6 +186,7 @@ public class GameManager : MonoBehaviour
     {
         Cursor.visible = false;
         upgradeCanvas.SetActive(false);
+        isGamePaused = false;
         Time.timeScale = 1f;
     }
 

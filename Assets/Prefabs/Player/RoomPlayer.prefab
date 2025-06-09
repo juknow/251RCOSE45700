@@ -10,7 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2258873755162168871}
   - component: {fileID: 6602344624048403443}
-  - component: {fileID: 3676891290647338719}
+  - component: {fileID: 1689063467548468971}
+  - component: {fileID: 8124547742330250538}
   m_Layer: 0
   m_Name: RoomPlayer
   m_TagString: Untagged
@@ -86,7 +87,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &3676891290647338719
+--- !u!114 &1689063467548468971
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -95,15 +96,32 @@ MonoBehaviour:
   m_GameObject: {fileID: 4807662902717110817}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2964582e4dad14d4cafabdf599c444d4, type: 3}
+  m_Script: {fileID: 11500000, guid: ec3880e4aba1cb9478a0ef36f63d954f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 0
-  shootTransform: {fileID: 1787657697557232037}
-  shootInterval: 0.05
-  leftMargin: 0
-  rightMargin: 0
-  isPlayer1: 1
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  showRoomGUI: 1
+  readyToBegin: 0
+  index: 0
+--- !u!114 &8124547742330250538
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4807662902717110817}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 2672738803
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
 --- !u!1 &5438111233318302500
 GameObject:
   m_ObjectHideFlags: 0

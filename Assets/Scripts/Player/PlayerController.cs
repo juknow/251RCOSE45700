@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Mirror;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : NetworkBehaviour
 {
     private float previousX;
     public float moveSpeed;
@@ -23,6 +24,9 @@ public class PlayerController : MonoBehaviour
     }
     void Update()
     {
+        // 로컬 플레이어가 아니면 입력 무시
+        if (!isLocalPlayer) return;
+
         if (GameManager.Instance.isGamePaused) return;
         HandleMovement();
         TryShoot();
@@ -37,6 +41,9 @@ public class PlayerController : MonoBehaviour
 
         previousX = toX;
         GameManager.Instance.AddFeedback(deltaX);
+
+        // 이동 위치를 서버에 전달하려면 커맨드 함수 추가 가능
+        // 예) CmdMove(toX);
     }
 
     public void TryShoot()
@@ -47,9 +54,17 @@ public class PlayerController : MonoBehaviour
             lastShotTime = Time.time;
         }
     }
-    public void Shoot()
+    [Command]
+    public void CmdShoot()
     {
         GameObject bullet = Instantiate(weapon, shootTransform.position, Quaternion.identity);
+        NetworkServer.Spawn(bullet);
+    }
+
+    public void Shoot()
+    {
+        // 실제로는 커맨드 호출해야 함
+        CmdShoot();
     }
 
 }

@@ -319,6 +319,8 @@ GameObject:
   m_Component:
   - component: {fileID: 300868796}
   - component: {fileID: 300868797}
+  - component: {fileID: 300868798}
+  - component: {fileID: 300868799}
   m_Layer: 0
   m_Name: RoomManager
   m_TagString: Untagged
@@ -361,16 +363,17 @@ MonoBehaviour:
   offlineScene: Assets/Scenes/TitleScene.unity
   onlineScene: Assets/Scenes/RoomScene.unity
   offlineSceneLoadDelay: 0
-  transport: {fileID: 0}
+  transport: {fileID: 300868798}
   networkAddress: localhost
   maxConnections: 100
   disconnectInactiveConnections: 0
   disconnectInactiveTimeout: 60
-  authenticator: {fileID: 0}
+  authenticator: {fileID: 300868799}
   playerPrefab: {fileID: 4807662902717110817, guid: 8925381d1a43d5141947ac45d41e0b6a, type: 3}
-  autoCreatePlayer: 1
+  autoCreatePlayer: 0
   playerSpawnMethod: 0
-  spawnPrefabs: []
+  spawnPrefabs:
+  - {fileID: 4807662902717110817, guid: 4c39623432764ab4e80ea09b599f6302, type: 3}
   exceptionsDisconnect: 1
   snapshotSettings:
     bufferTimeMultiplier: 2
@@ -393,6 +396,57 @@ MonoBehaviour:
   GameplayScene: Assets/Scenes/SoloPlayScene.unity
   _allPlayersReady: 0
   clientIndex: 0
+--- !u!114 &300868798
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 300868794}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b0fecffa3f624585964b0d0eb21b18e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  port: 7777
+  DualMode: 1
+  NoDelay: 1
+  Interval: 10
+  Timeout: 10000
+  RecvBufferSize: 7361536
+  SendBufferSize: 7361536
+  FastResend: 2
+  ReceiveWindowSize: 4096
+  SendWindowSize: 4096
+  MaxRetransmit: 40
+  MaximizeSocketBuffers: 1
+  ReliableMaxMessageSize: 297433
+  UnreliableMaxMessageSize: 1194
+  debugLog: 0
+  statisticsGUI: 0
+  statisticsLog: 0
+--- !u!114 &300868799
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 300868794}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28496b776660156428f00cf78289c1ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnServerAuthenticated:
+    m_PersistentCalls:
+      m_Calls: []
+  OnClientAuthenticated:
+    m_PersistentCalls:
+      m_Calls: []
+  serverUsername: 
+  serverPassword: 
+  username: 
+  password: 
 --- !u!1 &416669003
 GameObject:
   m_ObjectHideFlags: 0
@@ -776,6 +830,7 @@ GameObject:
   m_Component:
   - component: {fileID: 728473125}
   - component: {fileID: 728473124}
+  - component: {fileID: 728473126}
   m_Layer: 0
   m_Name: RoomUI
   m_TagString: Untagged
@@ -811,6 +866,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &728473126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 728473123}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb74582fda9fa874abf7b94a03d8386f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &739212436
 GameObject:
   m_ObjectHideFlags: 0
@@ -1542,9 +1609,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: TitleUI, Assembly-CSharp
-        m_MethodName: OnJoinClicked
+      - m_Target: {fileID: 728473126}
+        m_TargetAssemblyTypeName: OnlineUI, Assembly-CSharp
+        m_MethodName: OnClickStartServer
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

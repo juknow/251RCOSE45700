@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1689063467548468971}
   - component: {fileID: 8124547742330250538}
   - component: {fileID: -7966709443912445566}
+  - component: {fileID: -3862084808490997826}
   m_Layer: 0
   m_Name: RoomPlayer
   m_TagString: Untagged
@@ -157,6 +158,24 @@ MonoBehaviour:
   rotationSensitivity: 0.01
   positionPrecision: 0.01
   scalePrecision: 0.01
+--- !u!114 &-3862084808490997826
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4807662902717110817}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c93b1f977befb7a4195e6d82150aa666, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  moveSpeed: 0
+  leftMargin: -4
+  rightMargin: 4
 --- !u!1 &5438111233318302500
 GameObject:
   m_ObjectHideFlags: 0

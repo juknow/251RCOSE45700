@@ -42,8 +42,7 @@ public class PlayerController : NetworkBehaviour
         previousX = toX;
         GameManager.Instance.AddFeedback(deltaX);
 
-        // 이동 위치를 서버에 전달하려면 커맨드 함수 추가 가능
-        // 예) CmdMove(toX);
+        CmdMove(toX);
     }
 
     [Command]

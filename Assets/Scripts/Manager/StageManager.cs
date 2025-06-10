@@ -63,6 +63,7 @@ public class StageManager : NetworkBehaviour
                 spawnPoint.position,
                 Quaternion.identity);
             NetworkServer.Spawn(enemy);
+            Debug.Log("[Server] Spawned enemy: " + enemy.name);
         }
     }
 

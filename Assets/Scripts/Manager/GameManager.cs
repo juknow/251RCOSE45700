@@ -38,12 +38,6 @@ public class GameManager : NetworkBehaviour
     [SerializeField] private UpgradeContainer[] upgradeContainers; // 3개 컨테이너 참조
 
 
-    [SerializeField] private Slider feedbackSlider; // UI 연결
-    [SerializeField] private float feedbackDecaySpeed = 1f; // 게이지 감소 속도
-    [SerializeField] private float feedbackGainMultiplier = 1f; // 이동량 -> 게이지 증가량 배율
-    [SerializeField] private float maxFeedback = 100f;
-    private float currentFeedback = 0f;
-
     void Awake()
     {
         if (Instance == null)
@@ -57,6 +51,7 @@ public class GameManager : NetworkBehaviour
         Cursor.visible = false;
         playerLevel = playerLevelData.startingLevel;
         playerExp = 0f;
+        RegisterSpawnPrefabs();
 
         maxPlayerHp = playerHp;
         playerHpSlider.maxValue = 1f;
@@ -74,30 +69,24 @@ public class GameManager : NetworkBehaviour
 
             playerExpSlider.value = playerExp / maxPlayerExp;
 
-        UpdateFeedback();
+
     }
 
-    public void AddFeedback(float deltaX)
+    private void RegisterSpawnPrefabs()
     {
-        float gain = deltaX * feedbackGainMultiplier;
-        currentFeedback = Mathf.Clamp(currentFeedback + gain, 0, maxFeedback);
-    }
-
-    private void UpdateFeedback()
-    {
-        if (currentFeedback > 0)
+        foreach (StageData stage in allStages)
         {
-            currentFeedback -= feedbackDecaySpeed * Time.deltaTime;
-            currentFeedback = Mathf.Max(0, currentFeedback);
+            foreach (GameObject prefab in stage.enemyPrefabs)
+            {
+                if (!NetworkClient.prefabs.ContainsValue(prefab))
+                    NetworkClient.RegisterPrefab(prefab);
+            }
         }
-
-        feedbackSlider.value = currentFeedback / maxFeedback;
     }
 
     public float GetWeaponDamage()
     {
-        float feedbackBonus = (currentFeedback / maxFeedback); // 예: 0 ~ 1
-        return weaponDamage * (1f + feedbackBonus); // 최대 2배까지 증가
+        return weaponDamage;
     }
 
     void StartStage(int index)

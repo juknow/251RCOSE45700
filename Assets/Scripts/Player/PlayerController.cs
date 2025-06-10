@@ -40,7 +40,6 @@ public class PlayerController : NetworkBehaviour
         transform.position = new Vector3(toX, -4.5f , 0);
 
         previousX = toX;
-        GameManager.Instance.AddFeedback(deltaX);
 
         CmdMove(toX);
     }

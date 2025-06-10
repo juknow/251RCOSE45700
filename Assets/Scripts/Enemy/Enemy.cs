@@ -36,6 +36,11 @@ public class Enemy : NetworkBehaviour
         }
     }
 
+    public override void OnStartClient()
+    {
+        Debug.Log("[Client] Enemy appeared!");
+    }
+
 
     public void SetMoveSpeed(float moveSpeed)
     {

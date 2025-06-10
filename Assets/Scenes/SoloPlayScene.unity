@@ -1041,8 +1041,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -311, y: 0.000494}
-  m_SizeDelta: {x: 180, y: 450}
+  m_AnchoredPosition: {x: -311, y: -8.42}
+  m_SizeDelta: {x: 180, y: 715.43}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &627073748
 MonoBehaviour:
@@ -1924,6 +1924,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1315196793}
   - component: {fileID: 1315196794}
+  - component: {fileID: 1315196795}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -1958,6 +1959,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56e4ad4f3ce1b804490fff0db3c0a96c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   isGamePaused: 0
   playerLevelData: {fileID: 11400000, guid: a8bd9f5450d6ce040aae7db22dace1e4, type: 2}
   stageManager: {fileID: 1976816264}
@@ -1990,6 +1994,23 @@ MonoBehaviour:
   feedbackDecaySpeed: 10
   feedbackGainMultiplier: 1
   maxFeedback: 100
+--- !u!114 &1315196795
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1315196792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 3527373621
+  _assetId: 0
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
 --- !u!1 &1389321283
 GameObject:
   m_ObjectHideFlags: 0
@@ -2844,8 +2865,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 310, y: 0.00025749}
-  m_SizeDelta: {x: 180, y: 450}
+  m_AnchoredPosition: {x: 310, y: -8.42}
+  m_SizeDelta: {x: 180, y: 715.43}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1787719997
 MonoBehaviour:
@@ -3631,6 +3652,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1976816263}
   - component: {fileID: 1976816264}
+  - component: {fileID: 1976816265}
   m_Layer: 0
   m_Name: StageManager
   m_TagString: Untagged
@@ -3665,7 +3687,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f10fca56b19ad6408a0a3af5eef4a28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   spawnContainer: {fileID: 1137250278}
+--- !u!114 &1976816265
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1976816262}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 1482315111
+  _assetId: 0
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
 --- !u!1 &2028287073
 GameObject:
   m_ObjectHideFlags: 0

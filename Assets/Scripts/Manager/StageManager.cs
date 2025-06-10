@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Mirror;
 
-public class StageManager : MonoBehaviour
+public class StageManager : NetworkBehaviour
 {
     [SerializeField] private Transform spawnContainer;
     private Transform[] spawnPoints;
@@ -12,6 +13,7 @@ public class StageManager : MonoBehaviour
 
     private StageData currentStage;
 
+    [Server]
     public void StartStage(StageData stageData)
     {
         currentStage = stageData;
@@ -24,6 +26,7 @@ public class StageManager : MonoBehaviour
         StartCoroutine(RunStage());
     }
 
+    [Server]
     IEnumerator RunStage()
     {
         yield return new WaitForSeconds(2f); // 초기 대기
@@ -36,8 +39,10 @@ public class StageManager : MonoBehaviour
 
         Debug.Log($"[{currentStage.stageType}] 완료");
         OnStageCompleted?.Invoke();
+        RpcStageCompleted();
     }
 
+    [Server]
     void SpawnWave(int waveIndex)
     {
         Debug.Log($"[StageManager] Wave {waveIndex + 1} 시작");
@@ -53,9 +58,18 @@ public class StageManager : MonoBehaviour
             usedIndices.Add(spawnIndex);
 
             Transform spawnPoint = spawnPoints[spawnIndex];
-            GameObject enemy = currentStage.enemyPrefabs[UnityEngine.Random.Range(0, currentStage.enemyPrefabs.Length)];
-
-            Instantiate(enemy, spawnPoint.position, Quaternion.identity);
+            GameObject enemy = Instantiate(
+                currentStage.enemyPrefabs[UnityEngine.Random.Range(0, currentStage.enemyPrefabs.Length)],
+                spawnPoint.position,
+                Quaternion.identity);
+            NetworkServer.Spawn(enemy);
         }
+    }
+
+    [ClientRpc]
+    void RpcStageCompleted()
+    {
+        if (isServer) return;
+        OnStageCompleted?.Invoke();
     }
 }

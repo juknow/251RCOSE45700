@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Mirror;
 
-public class GameManager : MonoBehaviour
+public class GameManager : NetworkBehaviour
 {
     public static GameManager Instance;
 
@@ -64,7 +65,7 @@ public class GameManager : MonoBehaviour
         SetMaxExpForLevel(playerLevel);
 
 
-        StartStage(currentStageIndex);
+        if (NetworkServer.active) StartStage(currentStageIndex);
     }
 
     void Update()
@@ -119,7 +120,7 @@ public class GameManager : MonoBehaviour
     {
         stageManager.OnStageCompleted -= HandleStageCompleted;
         currentStageIndex++;
-        StartStage(currentStageIndex);
+        if (NetworkServer.active) StartStage(currentStageIndex);
     }
 
     public void DamagePlayer(float damage)

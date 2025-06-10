@@ -37,7 +37,7 @@ public class PlayerController : NetworkBehaviour
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         float toX = Mathf.Clamp(mousePos.x, leftMargin, rightMargin);
         float deltaX = Mathf.Abs(toX - previousX);
-        transform.position = new Vector3(toX, transform.position.y, transform.position.z);
+        transform.position = new Vector3(toX, -4.5f , 0);
 
         previousX = toX;
         GameManager.Instance.AddFeedback(deltaX);
@@ -46,25 +46,35 @@ public class PlayerController : NetworkBehaviour
         // 예) CmdMove(toX);
     }
 
-    public void TryShoot()
+    [Command]
+    void CmdMove(float toX)
+    {
+        RpcMove(toX);
+    }
+
+    [ClientRpc]
+    void RpcMove(float toX)
+    {
+        transform.position = new Vector3(toX, transform.position.y, transform.position.z);
+    }
+
+    void TryShoot()
     {
         if (Time.time - lastShotTime > shootInterval)
         {
-            Shoot();
             lastShotTime = Time.time;
+            CmdShoot();
         }
     }
+
     [Command]
-    public void CmdShoot()
+    void CmdShoot()
     {
+        if (weapon == null || shootTransform == null)
+            return;
+
         GameObject bullet = Instantiate(weapon, shootTransform.position, Quaternion.identity);
         NetworkServer.Spawn(bullet);
-    }
-
-    public void Shoot()
-    {
-        // 실제로는 커맨드 호출해야 함
-        CmdShoot();
     }
 
 }

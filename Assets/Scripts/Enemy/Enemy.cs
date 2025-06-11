@@ -1,53 +1,45 @@
-using System.Collections;
-using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class Enemy : NetworkBehaviour
 {
-    [SerializeField] private float moveSpeed = 10f;
+    [Header("스탯")]
+    [SerializeField] private float moveSpeed = 2f;
     [SerializeField] private float enemyDamage = 1f;
     [SerializeField] private float expEarn = 1f;
-    public float networkHp = 3f;
+    [SerializeField] private float networkHp = 3f;
 
     [SyncVar(hook = nameof(OnHpChanged))]
     private float hp;
 
     private float maxHp;
 
-    [SerializeField] private Slider hpSlider; // 슬라이더 연결
+    [Header("UI")]
+    [SerializeField] private Slider hpSlider;
 
     private float minY = -7f;
 
     public override void OnStartServer()
     {
-        maxHp = hp = networkHp;
+        maxHp = networkHp;
+        hp = maxHp;
     }
 
     void Start()
     {
-        maxHp = hp;
-
         if (hpSlider != null)
         {
-            hpSlider.maxValue = maxHp;
+            hpSlider.maxValue = networkHp;
             hpSlider.value = hp;
         }
     }
 
     public override void OnStartClient()
     {
-        Debug.Log("[Client] Enemy appeared!");
+        Debug.Log("[Client] Enemy spawned.");
     }
 
-
-    public void SetMoveSpeed(float moveSpeed)
-    {
-        this.moveSpeed = moveSpeed;
-    }
-
-    // Update is called once per frame
     void Update()
     {
         if (!isServer) return;
@@ -60,27 +52,17 @@ public class Enemy : NetworkBehaviour
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    // 
+    [Server]
+    public void ReceiveDamage(float amount)
     {
-        if (!isServer) return;
+        hp -= amount;
 
-        if (collision.CompareTag("Weapon"))
+        if (hp <= 0)
         {
-            hp -= GameManager.Instance.GetWeaponDamage();
+            if (PlayerStatManager.Instance != null)
+                PlayerStatManager.Instance.AddExp(expEarn);
 
-            hpSlider.value = hp;
-
-            if (hp <= 0)
-            {
-                GameManager.Instance.AddExp(expEarn);
-                NetworkServer.Destroy(gameObject);
-            }
-
-            Destroy(collision.gameObject);
-        }
-        else if (collision.CompareTag("Player"))
-        {
-            GameManager.Instance.DamagePlayer(enemyDamage);
             NetworkServer.Destroy(gameObject);
         }
     }
@@ -88,8 +70,19 @@ public class Enemy : NetworkBehaviour
     void OnHpChanged(float oldHp, float newHp)
     {
         if (hpSlider != null)
-        {
             hpSlider.value = newHp;
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (!isServer) return;
+
+        if (other.CompareTag("Player"))
+        {
+            if (PlayerStatManager.Instance != null)
+                PlayerStatManager.Instance.TakeDamage(enemyDamage);
+
+            NetworkServer.Destroy(gameObject);
         }
     }
 }

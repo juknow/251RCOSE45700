@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
@@ -13,21 +13,24 @@ public class UpgradeContainer : MonoBehaviour
     public void SetUpgrade(UpgradeData data)
     {
         upgradeData = data;
-
         iconImage.sprite = data.icon;
         nameText.text = data.upgradeName;
         descriptionText.text = data.description;
 
-        Button button = GetComponent<Button>();
-        button.onClick.AddListener(OnUpgradeSelected);
+        Button btn = GetComponent<Button>();
+        btn.onClick.RemoveAllListeners();
+        btn.onClick.AddListener(OnUpgradeSelected);
     }
 
-    // ButtonÀÌ Å¬¸¯µÉ ¶§ ÀÌ ÇÔ¼ö ¿¬°á
     public void OnUpgradeSelected()
     {
-        GameManager.Instance.ApplyUpgrade(upgradeData.upgradeType);
-        GameManager.Instance.CloseUpgradeUI();
+        if (PlayerStatManager.Instance != null)
+        {
+            PlayerStatManager.Instance.CmdApplyUpgrade(upgradeData.upgradeType);
+        }
+        else
+        {
+            Debug.LogWarning("[UpgradeContainer] PlayerStatManager ì‹±ê¸€í†¤ì´ ì—†ìŠµë‹ˆë‹¤");
+        }
     }
-
-
 }

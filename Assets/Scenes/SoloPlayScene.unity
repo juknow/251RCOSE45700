@@ -1023,6 +1023,84 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1137250278}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &641897000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 641897003}
+  - component: {fileID: 641897002}
+  - component: {fileID: 641897001}
+  m_Layer: 0
+  m_Name: PlayerStatManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &641897001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 641897000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 2382812641
+  _assetId: 0
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
+--- !u!114 &641897002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 641897000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2fe40a047f9d314e9843431afd389be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0.01
+  hpSlider: {fileID: 1884711534}
+  expSlider: {fileID: 1450633145}
+  upgradeCanvas: {fileID: 1566610778}
+  upgradeContainers:
+  - {fileID: 1612888690}
+  - {fileID: 139129910}
+  - {fileID: 1169651741}
+  levelData: {fileID: 11400000, guid: a8bd9f5450d6ce040aae7db22dace1e4, type: 2}
+  allUpgrades:
+  - {fileID: 11400000, guid: b048a72543f04d24587580d46981ac28, type: 2}
+  - {fileID: 11400000, guid: a375bcd8ca73c4c4880c5bc84df0c2a5, type: 2}
+  - {fileID: 11400000, guid: feb403075468adc4389fdfc55073d54c, type: 2}
+  - {fileID: 11400000, guid: 6385a153e7bb55e488c8f722ed0a539e, type: 2}
+--- !u!4 &641897003
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 641897000}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -7.6128316, y: 7.6953864, z: -0.06454126}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &727067096
 GameObject:
   m_ObjectHideFlags: 0
@@ -1836,8 +1914,6 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  isGamePaused: 0
-  playerLevelData: {fileID: 11400000, guid: a8bd9f5450d6ce040aae7db22dace1e4, type: 2}
   stageManager: {fileID: 1976816264}
   allStages:
   - {fileID: 11400000, guid: c58e56b83dd622a49af116789d74233c, type: 2}
@@ -1846,24 +1922,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f166d0d7d95f6b344bea5c69d5af2be0, type: 2}
   - {fileID: 11400000, guid: 0a89cafbf37e097438c758d8bc6036b8, type: 2}
   - {fileID: 11400000, guid: a0d6fdc948b61f54bbb383e0a8a3f193, type: 2}
-  weaponDamage: 1
-  playerHp: 3
-  maxPlayerHp: 0
-  playerExp: 3
-  maxPlayerExp: 0
-  playerLevel: 1
-  playerHpSlider: {fileID: 1884711534}
-  playerExpSlider: {fileID: 1450633145}
-  allUpgrades:
-  - {fileID: 11400000, guid: b048a72543f04d24587580d46981ac28, type: 2}
-  - {fileID: 11400000, guid: a375bcd8ca73c4c4880c5bc84df0c2a5, type: 2}
-  - {fileID: 11400000, guid: feb403075468adc4389fdfc55073d54c, type: 2}
-  - {fileID: 11400000, guid: 6385a153e7bb55e488c8f722ed0a539e, type: 2}
-  upgradeCanvas: {fileID: 1566610778}
-  upgradeContainers:
-  - {fileID: 1169651741}
-  - {fileID: 139129910}
-  - {fileID: 1612888690}
 --- !u!114 &1315196795
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3415,3 +3473,4 @@ SceneRoots:
   - {fileID: 2070250973}
   - {fileID: 849814649}
   - {fileID: 1566610782}
+  - {fileID: 641897003}

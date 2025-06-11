@@ -1,42 +1,17 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using Mirror;
 
 public class GameManager : NetworkBehaviour
 {
     public static GameManager Instance;
 
-    public bool isGamePaused = false;
-
-    [SerializeField] private PlayerLevelData playerLevelData;
-
     [SerializeField] private StageManager stageManager;
     [SerializeField] private StageData[] allStages;
-
     private int currentStageIndex = 0;
 
-    public float weaponDamage = 1f;
-    public float playerHp = 3f;
-    public float maxPlayerHp = 3f;
-
-    public float playerExp = 0f;
-    public float maxPlayerExp = 3f;
-
-    public int playerLevel = 1;
-
-
-
-    [SerializeField]
-    private Slider playerHpSlider;
-
-    [SerializeField]
-    private Slider playerExpSlider;
-
-    [SerializeField] private UpgradeData[] allUpgrades; // 전체 업그레이드 목록
-    [SerializeField] private GameObject upgradeCanvas; // UpgradeCanvas 전체
-    [SerializeField] private UpgradeContainer[] upgradeContainers; // 3개 컨테이너 참조
-
+    [SyncVar]
+    public bool isGamePaused = false;
 
     void Awake()
     {
@@ -48,28 +23,33 @@ public class GameManager : NetworkBehaviour
 
     void Start()
     {
-        Cursor.visible = false;
-        playerLevel = playerLevelData.startingLevel;
-        playerExp = 0f;
         RegisterSpawnPrefabs();
 
-        maxPlayerHp = playerHp;
-        playerHpSlider.maxValue = 1f;
-        
-
-        SetMaxExpForLevel(playerLevel);
-
-
-        if (NetworkServer.active) StartStage(currentStageIndex);
+        if (NetworkServer.active)
+            StartStage(currentStageIndex);
     }
 
-    void Update()
+    [Server]                       // 서버 전용 진입점
+    public void SetPause(bool paused)
     {
-            playerHpSlider.value = playerHp / maxPlayerHp;
+        if (isGamePaused == paused) return;
 
-            playerExpSlider.value = playerExp / maxPlayerExp;
+        isGamePaused = paused;
+        RpcApplyPause(paused);     // 모든 클라이언트에 전달
+        ApplyPauseLocal(paused);   // 서버 자신(호스트)도 즉시 반영
+    }
 
+    [ClientRpc]
+    void RpcApplyPause(bool paused)
+    {
+        ApplyPauseLocal(paused);   // 각 클라이언트에서 실행
+    }
 
+    // Time.timeScale 변경은 로컬(서버·클라)에서 직접
+    void ApplyPauseLocal(bool paused)
+    {
+        Time.timeScale = paused ? 0f : 1f;
+        Cursor.visible = paused;   // 필요하면 커서 토글
     }
 
     private void RegisterSpawnPrefabs()
@@ -84,140 +64,28 @@ public class GameManager : NetworkBehaviour
         }
     }
 
-    public float GetWeaponDamage()
-    {
-        return weaponDamage;
-    }
-
-    void StartStage(int index)
+    private void StartStage(int index)
     {
         if (index < allStages.Length)
         {
             StageData stage = allStages[index];
-            Debug.Log($"[GameManager] Starting {stage.stageType}");
+            Debug.Log($"[GameManager] Starting stage: {stage.stageType}");
 
             stageManager.OnStageCompleted += HandleStageCompleted;
             stageManager.StartStage(stage);
         }
         else
         {
-            Debug.Log("게임 전체 완료!");
+            Debug.Log(" 모든 스테이지 완료!");
         }
     }
 
-    void HandleStageCompleted()
+    private void HandleStageCompleted()
     {
         stageManager.OnStageCompleted -= HandleStageCompleted;
         currentStageIndex++;
-        if (NetworkServer.active) StartStage(currentStageIndex);
+
+        if (NetworkServer.active)
+            StartStage(currentStageIndex);
     }
-
-    public void DamagePlayer(float damage)
-    {
-        playerHp -= damage;
-        Debug.Log($"[GameManager] Player damaged. Current HP: {playerHp}");
-
-        if (playerHp <= 0)
-        {
-            Debug.Log("[GameManager] Player Died");
-            // 여기에 게임 오버 처리 추가 가능
-        }
-    }
-
-    public void AddExp(float amount)
-    {
-        playerExp += amount;
-        Debug.Log($" 경험치 획득: +{amount}");
-
-        while (playerExp >= maxPlayerExp && playerLevel < playerLevelData.expTable.Count)
-        {
-            playerExp -= maxPlayerExp;
-            playerLevel++;
-
-            SetMaxExpForLevel(playerLevel);
-            Debug.Log($"레벨업! 현재 레벨: {playerLevel}");
-            OpenUpgradeUI();
-        }
-
-        Debug.Log($"[레벨 {playerLevel}] EXP: {playerExp:F1} / {maxPlayerExp:F1}");
-    }
-
-    private void OpenUpgradeUI()
-    {
-        Cursor.visible = true;
-        Time.timeScale = 0f;
-        upgradeCanvas.SetActive(true);
-        isGamePaused = true;
-
-        List<UpgradeData> selected = GetRandomUpgrades(3);
-
-        for (int i = 0; i < upgradeContainers.Length; i++)
-        {
-            upgradeContainers[i].SetUpgrade(selected[i]);
-        }
-    }
-
-    private List<UpgradeData> GetRandomUpgrades(int count)
-    {
-        List<UpgradeData> result = new List<UpgradeData>();
-        List<UpgradeData> pool = new List<UpgradeData>(allUpgrades);
-
-        for (int i = 0; i < count && pool.Count > 0; i++)
-        {
-            int index = Random.Range(0, pool.Count);
-            result.Add(pool[index]);
-            pool.RemoveAt(index);
-        }
-
-        return result;
-    }
-
-    public void CloseUpgradeUI()
-    {
-        Cursor.visible = false;
-        upgradeCanvas.SetActive(false);
-        isGamePaused = false;
-        Time.timeScale = 1f;
-    }
-
-
-    private void SetMaxExpForLevel(int level)
-    {
-        if (level - 1 < playerLevelData.expTable.Count)
-        {
-            maxPlayerExp = playerLevelData.expTable[level - 1];
-        }
-        else
-        {
-            Debug.LogWarning("레벨에 해당하는 경험치가 없습니다. maxPlayerExp를 무한으로 설정합니다.");
-            maxPlayerExp = float.MaxValue;
-        }
-    }
-
-    public void ApplyUpgrade(UpgradeType type)
-    {
-        switch (type)
-        {
-            case UpgradeType.IncreaseMaxHp:
-                maxPlayerHp += 2f;
-                playerHp += 2f;
-                Debug.Log("체력 업그레이드! +2 HP");
-                break;
-
-            case UpgradeType.IncreaseDamage:
-                weaponDamage += 1f;
-                break;
-
-            case UpgradeType.IncreaseFireRate:
-                break;
-
-            default:
-                Debug.LogWarning("알 수 없는 업그레이드 타입");
-                break;
-        }
-    }
-
-
-
-
 }

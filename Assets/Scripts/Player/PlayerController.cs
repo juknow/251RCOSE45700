@@ -53,7 +53,7 @@ public class PlayerController : NetworkBehaviour
     [ClientRpc]
     void RpcMove(float toX)
     {
-        transform.position = new Vector3(toX, transform.position.y, transform.position.z);
+        transform.position = new Vector3(toX, -4.5f, transform.position.z);
     }
 
     void TryShoot()

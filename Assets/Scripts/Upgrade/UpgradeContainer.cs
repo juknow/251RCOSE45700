@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Mirror;
 
 public class UpgradeContainer : MonoBehaviour
 {
@@ -25,8 +26,10 @@ public class UpgradeContainer : MonoBehaviour
     // Button이 클릭될 때 이 함수 연결
     public void OnUpgradeSelected()
     {
-        GameManager.Instance.ApplyUpgrade(upgradeData.upgradeType);
-        GameManager.Instance.CloseUpgradeUI();
+        var player = NetworkClient.connection.identity.GetComponent<PlayerController>();
+
+        player.CmdRequestUpgrade(upgradeData.upgradeType);
+
     }
 
 

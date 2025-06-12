@@ -75,5 +75,13 @@ public class PlayerController : NetworkBehaviour
         NetworkServer.Spawn(bullet);
     }
 
+
+    [Command] // 게임오브젝트가 AUtority가 없어서 룸매니저나 PlayerPrefab에 있는 authority에 커맨드를 가지고 있어야함.
+    public void CmdRequestUpgrade(UpgradeType type)
+    {
+        GameManager.Instance.ApplyUpgradeOnServer(type); 
+        GameManager.Instance.RpcCloseUpgradeUI();       
+    }
+
 }
 

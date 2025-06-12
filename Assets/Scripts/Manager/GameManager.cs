@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Mirror;
+using UnityEngine.SceneManagement;
 
 public class GameManager : NetworkBehaviour
 {
@@ -123,6 +124,7 @@ public class GameManager : NetworkBehaviour
         if (playerHp <= 0)
         {
             Debug.Log("[GameManager] Player Died");
+            ReturnToTitleScene();
             // 여기에 게임 오버 처리 추가 가능
         }
     }
@@ -212,13 +214,7 @@ public class GameManager : NetworkBehaviour
         return null;
     }
 
-    public void CloseUpgradeUI()
-    {
-        Cursor.visible = false;
-        upgradeCanvas.SetActive(false);
-        isGamePaused = false;
-        Time.timeScale = 1f;
-    }
+
 
 
     private void SetMaxExpForLevel(int level)
@@ -234,7 +230,26 @@ public class GameManager : NetworkBehaviour
         }
     }
 
-    public void ApplyUpgrade(UpgradeType type)
+    [ClientRpc]
+    public void RpcCloseUpgradeUI()
+    {
+        Cursor.visible = false;
+        upgradeCanvas.SetActive(false);
+        isGamePaused = false;
+        Time.timeScale = 1f;
+    }
+
+    /*
+    [Command] 권한이 없어서 못씀
+    public void CmdApplyUpgrade(UpgradeType type)
+    {
+        ApplyUpgradeOnServer(type);
+        RpcCloseUpgradeUI(); // 업그레이드 적용 후 UI 닫기
+    }
+    */
+
+    [Server]
+    public void ApplyUpgradeOnServer(UpgradeType type)
     {
         switch (type)
         {
@@ -249,12 +264,23 @@ public class GameManager : NetworkBehaviour
                 break;
 
             case UpgradeType.IncreaseFireRate:
+                // 구현 필요 시 작성
                 break;
 
             default:
                 Debug.LogWarning("알 수 없는 업그레이드 타입");
                 break;
         }
+    }
+
+
+    [Server]
+    private void ReturnToTitleScene()
+    {
+        Debug.Log("[GameManager] Returning all clients to TitleScene...");
+
+        // 모든 연결된 클라이언트를 TitleScene으로 이동
+        RoomManager.singleton.ServerChangeScene("TitleScene");
     }
 
 

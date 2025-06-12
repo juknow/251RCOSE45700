@@ -16,14 +16,16 @@ public class GameManager : NetworkBehaviour
 
     private int currentStageIndex = 0;
 
-    public float weaponDamage = 1f;
-    public float playerHp = 3f;
-    public float maxPlayerHp = 3f;
+    [Header("Player Stats")]
+    [SyncVar] public float playerHp = 3f;
+    [SyncVar] public float maxPlayerHp = 3f;
 
-    public float playerExp = 0f;
-    public float maxPlayerExp = 3f;
+    [SyncVar] public float playerExp = 0f;
+    [SyncVar] public float maxPlayerExp = 3f;
 
-    public int playerLevel = 1;
+    [SyncVar] public int playerLevel = 1;
+    [SyncVar] public float weaponDamage = 1f;
+
 
 
 

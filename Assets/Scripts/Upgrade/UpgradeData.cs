@@ -3,6 +3,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "UpgradeData", menuName = "Upgrade/New Upgrade")]
 public class UpgradeData : ScriptableObject
 {
+    public string upgradeId;
     public string upgradeName;
     [TextArea]
     public string description;

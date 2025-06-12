@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04f83a7393cdc034f9754f3e8d55be94, type: 3}
   m_Name: UpgradeData 1
   m_EditorClassIdentifier: 
+  upgradeId: 0
   upgradeName: "\uCCB4\uB825 \uC99D\uAC00"
   description: "\uCCB4\uB825\uC774 \uC18C\uD3ED \uC99D\uAC00\uD569\uB2C8\uB2E4."
   icon: {fileID: 980299861, guid: 83e16fb071ae440ce8dab0fa52449bf7, type: 3}

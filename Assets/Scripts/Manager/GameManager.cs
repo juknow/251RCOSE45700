@@ -140,7 +140,8 @@ public class GameManager : NetworkBehaviour
 
             SetMaxExpForLevel(playerLevel);
             Debug.Log($"레벨업! 현재 레벨: {playerLevel}");
-            RpcOpenUpgradeUI();
+            List<string> upgradeIds = GetRandomUpgradeIds(3);
+            RpcOpenUpgradeUI(upgradeIds.ToArray());
         }
 
         Debug.Log($"[레벨 {playerLevel}] EXP: {playerExp:F1} / {maxPlayerExp:F1}");
@@ -164,33 +165,51 @@ public class GameManager : NetworkBehaviour
     */
 
     [ClientRpc]
-    void RpcOpenUpgradeUI()
+    void RpcOpenUpgradeUI(string[] upgradeIds)
     {
         Cursor.visible = true;
         Time.timeScale = 0f;
         upgradeCanvas.SetActive(true);
         isGamePaused = true;
 
-        List<UpgradeData> selected = GetRandomUpgrades(3);
+        List<UpgradeData> selected = new List<UpgradeData>();
+        foreach (string id in upgradeIds)
+        {
+            UpgradeData data = FindUpgradeDataById(id);
+            if (data != null)
+                selected.Add(data);
+        }
+
         for (int i = 0; i < upgradeContainers.Length; i++)
         {
             upgradeContainers[i].SetUpgrade(selected[i]);
         }
     }
 
-    private List<UpgradeData> GetRandomUpgrades(int count)
+    [Server]
+    private List<string> GetRandomUpgradeIds(int count)
     {
-        List<UpgradeData> result = new List<UpgradeData>();
+        List<string> result = new List<string>();
         List<UpgradeData> pool = new List<UpgradeData>(allUpgrades);
 
         for (int i = 0; i < count && pool.Count > 0; i++)
         {
             int index = Random.Range(0, pool.Count);
-            result.Add(pool[index]);
+            result.Add(pool[index].upgradeId); // ID만 저장
             pool.RemoveAt(index);
         }
 
         return result;
+    }
+
+    private UpgradeData FindUpgradeDataById(string id)
+    {
+        foreach (var data in allUpgrades)
+        {
+            if (data.upgradeId == id)
+                return data;
+        }
+        return null;
     }
 
     public void CloseUpgradeUI()

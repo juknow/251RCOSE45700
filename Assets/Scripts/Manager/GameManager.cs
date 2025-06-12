@@ -48,30 +48,30 @@ public class GameManager : NetworkBehaviour
             Destroy(gameObject);
     }
 
+    public override void OnStartServer()
+    {
+        playerLevel = playerLevelData.startingLevel;
+        playerExp = 0f;
+        maxPlayerHp = playerHp;
+        SetMaxExpForLevel(playerLevel);
+    }
+
     void Start()
     {
         Cursor.visible = false;
-        playerLevel = playerLevelData.startingLevel;
-        playerExp = 0f;
         RegisterSpawnPrefabs();
 
-        maxPlayerHp = playerHp;
         playerHpSlider.maxValue = 1f;
-        
-
         SetMaxExpForLevel(playerLevel);
-
 
         if (NetworkServer.active) StartStage(currentStageIndex);
     }
 
     void Update()
     {
-            playerHpSlider.value = playerHp / maxPlayerHp;
-
-            playerExpSlider.value = playerExp / maxPlayerExp;
-
-
+        if (!isClient) return;
+        playerHpSlider.value = playerHp / maxPlayerHp;
+        playerExpSlider.value = playerExp / maxPlayerExp;
     }
 
     private void RegisterSpawnPrefabs()
@@ -114,6 +114,7 @@ public class GameManager : NetworkBehaviour
         if (NetworkServer.active) StartStage(currentStageIndex);
     }
 
+    [Server]
     public void DamagePlayer(float damage)
     {
         playerHp -= damage;
@@ -126,6 +127,7 @@ public class GameManager : NetworkBehaviour
         }
     }
 
+    [Server]
     public void AddExp(float amount)
     {
         playerExp += amount;
@@ -153,6 +155,21 @@ public class GameManager : NetworkBehaviour
 
         List<UpgradeData> selected = GetRandomUpgrades(3);
 
+        for (int i = 0; i < upgradeContainers.Length; i++)
+        {
+            upgradeContainers[i].SetUpgrade(selected[i]);
+        }
+    }
+
+    [ClientRpc]
+    void RpcOpenUpgradeUI()
+    {
+        Cursor.visible = true;
+        Time.timeScale = 0f;
+        upgradeCanvas.SetActive(true);
+        isGamePaused = true;
+
+        List<UpgradeData> selected = GetRandomUpgrades(3);
         for (int i = 0; i < upgradeContainers.Length; i++)
         {
             upgradeContainers[i].SetUpgrade(selected[i]);

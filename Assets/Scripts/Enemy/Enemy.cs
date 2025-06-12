@@ -76,7 +76,8 @@ public class Enemy : NetworkBehaviour
                 NetworkServer.Destroy(gameObject);
             }
 
-            Destroy(collision.gameObject);
+            // 무기 제거는 서버에서
+            NetworkServer.Destroy(collision.gameObject);
         }
         else if (collision.CompareTag("Player"))
         {

@@ -140,12 +140,13 @@ public class GameManager : NetworkBehaviour
 
             SetMaxExpForLevel(playerLevel);
             Debug.Log($"레벨업! 현재 레벨: {playerLevel}");
-            OpenUpgradeUI();
+            RpcOpenUpgradeUI();
         }
 
         Debug.Log($"[레벨 {playerLevel}] EXP: {playerExp:F1} / {maxPlayerExp:F1}");
     }
 
+    /*
     private void OpenUpgradeUI()
     {
         Cursor.visible = true;
@@ -160,6 +161,7 @@ public class GameManager : NetworkBehaviour
             upgradeContainers[i].SetUpgrade(selected[i]);
         }
     }
+    */
 
     [ClientRpc]
     void RpcOpenUpgradeUI()

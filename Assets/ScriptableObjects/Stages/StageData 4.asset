@@ -15,7 +15,9 @@ MonoBehaviour:
   stageName: Stage4
   stageType: 0
   totalWaves: 5
-  waveInterval: 4
+  waveInterval: 5
   enemiesPerWave: 5
   enemyPrefabs:
-  - {fileID: 8672579129450794706, guid: fb9ecb603138f4756bb2d50b7abffdf8, type: 3}
+  - {fileID: 8672579129450794706, guid: 98835a8dd0ff4a44c95e213a5132968c, type: 3}
+  - {fileID: 8672579129450794706, guid: ee94d21ccd16282449e7b6af094bd3fb, type: 3}
+  - {fileID: 8672579129450794706, guid: b0bdcc31d4b1449e88ff66a27a0b7dfe, type: 3}

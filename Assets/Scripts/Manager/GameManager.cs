@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class GameManager : NetworkBehaviour
 {
@@ -15,6 +16,7 @@ public class GameManager : NetworkBehaviour
     [SerializeField] private StageManager stageManager;
     [SerializeField] private StageData[] allStages;
 
+    [SyncVar(hook = nameof(OnStageChanged))]
     private int currentStageIndex = 0;
 
     [Header("Player Stats")]
@@ -24,8 +26,11 @@ public class GameManager : NetworkBehaviour
     [SyncVar] public float playerExp = 0f;
     [SyncVar] public float maxPlayerExp = 3f;
 
-    [SyncVar] public int playerLevel = 1;
+    [SyncVar(hook = nameof(OnLevelChanged))]
+    public int playerLevel = 1;
     [SyncVar] public float weaponDamage = 1f;
+
+    [SyncVar] public float fireRate = 0.8f;
 
 
 
@@ -39,6 +44,15 @@ public class GameManager : NetworkBehaviour
     [SerializeField] private UpgradeData[] allUpgrades; // 전체 업그레이드 목록
     [SerializeField] private GameObject upgradeCanvas; // UpgradeCanvas 전체
     [SerializeField] private UpgradeContainer[] upgradeContainers; // 3개 컨테이너 참조
+
+
+    [Header("UI Text")]
+    [SerializeField] private TMP_Text levelText;
+    [SerializeField] private TMP_Text stageText;
+    [SerializeField] private TMP_Text fireRateText;
+    [SerializeField] private TMP_Text hpText;
+    [SerializeField] private TMP_Text expText;
+    [SerializeField] private TMP_Text damageText;
 
 
     void Awake()
@@ -106,6 +120,7 @@ public class GameManager : NetworkBehaviour
         {
             Debug.Log("게임 전체 완료!");
         }
+        UpdateUIText();
     }
 
     void HandleStageCompleted()
@@ -120,6 +135,8 @@ public class GameManager : NetworkBehaviour
     {
         playerHp -= damage;
         Debug.Log($"[GameManager] Player damaged. Current HP: {playerHp}");
+
+        UpdateUIText();
 
         if (playerHp <= 0)
         {
@@ -141,6 +158,7 @@ public class GameManager : NetworkBehaviour
             playerLevel++;
 
             SetMaxExpForLevel(playerLevel);
+            UpdateUIText();
             Debug.Log($"레벨업! 현재 레벨: {playerLevel}");
             List<string> upgradeIds = GetRandomUpgradeIds(3);
             RpcOpenUpgradeUI(upgradeIds.ToArray());
@@ -264,13 +282,15 @@ public class GameManager : NetworkBehaviour
                 break;
 
             case UpgradeType.IncreaseFireRate:
-                // 구현 필요 시 작성
+                fireRate = fireRate - 0.5f;
                 break;
 
             default:
                 Debug.LogWarning("알 수 없는 업그레이드 타입");
                 break;
         }
+
+        UpdateUIText();
     }
 
 
@@ -283,6 +303,37 @@ public class GameManager : NetworkBehaviour
         RoomManager.singleton.ServerChangeScene("TitleScene");
     }
 
+
+    private void UpdateUIText()
+    {
+        if (levelText != null)
+            levelText.text = $"Level {playerLevel}";
+
+        if (stageText != null)
+            stageText.text = $"Stage {currentStageIndex + 1}";
+
+        if (fireRateText != null)
+            fireRateText.text = $"Fire Rate: {fireRate:F1}/s";
+
+        if (hpText != null)
+            hpText.text = $"HP: {playerHp:F0} / {maxPlayerHp:F0}";
+
+        if (expText != null)
+            expText.text = $"EXP: {playerExp:F1} / {maxPlayerExp:F1}";
+
+        if (damageText != null)
+            damageText.text = $"Damage: {weaponDamage:F1}";
+    }
+
+    private void OnStageChanged(int oldValue, int newValue)
+    {
+        UpdateUIText();
+    }
+
+    private void OnLevelChanged(int oldValue, int newValue)
+    {
+        UpdateUIText();
+    }
 
 
 

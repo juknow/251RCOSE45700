@@ -12,7 +12,6 @@ public class PlayerController : NetworkBehaviour
 
     public Transform shootTransform;
 
-    [SerializeField] private float shootInterval = 0.5f;
     [SerializeField] private float leftMargin = -4f;
     [SerializeField] private float rightMargin = 4f;
 
@@ -58,7 +57,9 @@ public class PlayerController : NetworkBehaviour
 
     void TryShoot()
     {
-        if (Time.time - lastShotTime > shootInterval)
+        float interval = GameManager.Instance.fireRate;
+
+        if (Time.time - lastShotTime > interval)
         {
             lastShotTime = Time.time;
             CmdShoot();

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stageName: Stage1
   stageType: 0
-  totalWaves: 5
+  totalWaves: 3
   waveInterval: 5
   enemiesPerWave: 3
   enemyPrefabs:

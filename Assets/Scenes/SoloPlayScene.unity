@@ -2105,6 +2105,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   isGamePaused: 0
+  isUpgradeSelected: 0
   playerLevelData: {fileID: 11400000, guid: a8bd9f5450d6ce040aae7db22dace1e4, type: 2}
   stageManager: {fileID: 1976816264}
   allStages:
@@ -2120,7 +2121,7 @@ MonoBehaviour:
   maxPlayerExp: 0
   playerLevel: 1
   weaponDamage: 1
-  fireRate: 0.8
+  fireRate: 0.7
   playerHpSlider: {fileID: 1884711534}
   playerExpSlider: {fileID: 1450633145}
   allUpgrades:

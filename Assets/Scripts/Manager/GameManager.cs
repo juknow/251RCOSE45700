@@ -11,6 +11,8 @@ public class GameManager : NetworkBehaviour
 
     public bool isGamePaused = false;
 
+    public bool isUpgradeSelected = false;
+
     [SerializeField] private PlayerLevelData playerLevelData;
 
     [SerializeField] private StageManager stageManager;
@@ -30,7 +32,7 @@ public class GameManager : NetworkBehaviour
     public int playerLevel = 1;
     [SyncVar] public float weaponDamage = 1f;
 
-    [SyncVar] public float fireRate = 0.8f;
+    [SyncVar] public float fireRate = 0.7f;
 
 
 
@@ -255,6 +257,7 @@ public class GameManager : NetworkBehaviour
         upgradeCanvas.SetActive(false);
         isGamePaused = false;
         Time.timeScale = 1f;
+        isUpgradeSelected = false;
     }
 
     /*
@@ -279,10 +282,12 @@ public class GameManager : NetworkBehaviour
 
             case UpgradeType.IncreaseDamage:
                 weaponDamage += 1f;
+                Debug.Log("공격력 업그레이드! +1 ");
                 break;
 
             case UpgradeType.IncreaseFireRate:
-                fireRate = fireRate - 0.5f;
+                fireRate = fireRate - 0.05f;
+                Debug.Log("공격속도 업그레이드! 0.05초 감소");
                 break;
 
             default:

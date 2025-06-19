@@ -81,7 +81,8 @@ public class PlayerController : NetworkBehaviour
     public void CmdRequestUpgrade(UpgradeType type)
     {
         GameManager.Instance.ApplyUpgradeOnServer(type); 
-        GameManager.Instance.RpcCloseUpgradeUI();       
+        GameManager.Instance.RpcCloseUpgradeUI();
+        Debug.LogWarning("업그레이드 적용");
     }
 
 }
